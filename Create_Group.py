@@ -15,8 +15,9 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
     global Tarray
     Tarray = []
     global connected_server
-    def __init__(self):
+    def __init__(self, parent=None):
         super(self.__class__, self).__init__()
+        self.parent = parent;
         self.setupUi(self)
         self.setWindowTitle("OPC Client- Create Group")
         connected_server = connections.server()
@@ -71,25 +72,17 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
         group = str(group)
         if not group :
             QMessageBox.about(self, "Error", "Enter the Group name!!")
-        if not rate:
-            QMessageBox.about(self, "Error", " Update rate is 5 seconds!!")
-            rate = "5"
-            tags = str(Tarray)
-            connected_server = connections.server()
-            connected_server = str(connected_server)
-            QMessageBox.about(self, "Sucess", "Group has been created ")
-            QMessageBox.about(self, "Warning", "Please Refresh the homescreen to see the the group ! ")
-            connections.create_new(connected_server,group , tags , rate)
-            del Tarray[:]
-            self.close()
         else:
+            if not rate:
+                rate = "5"
             tags = str(Tarray)
             connected_server = connections.server()
             connected_server = str(connected_server)
             QMessageBox.about(self, "Sucess", "Group has been created ")
-            QMessageBox.about(self, "Warning", "Please Refresh the homescreen to see the the group ! ")
+            #QMessageBox.about(self, "Warning", "Please Refresh the homescreen to see the the group ! ")
             connections.create_new(connected_server,group , tags , rate)
             del Tarray[:]
+            self.parent.refresh();
             self.close()
         return 0
 

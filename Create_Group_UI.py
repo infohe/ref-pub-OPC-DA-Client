@@ -129,6 +129,7 @@ class Ui_MainWindow(object):
         self.lineEdit_2 = QtGui.QLineEdit(self.centralwidget)
         self.lineEdit_2.setGeometry(QtCore.QRect(510, 69, 191, 31))
         self.lineEdit_2.setObjectName(_fromUtf8("lineEdit_2"))
+        self.lineEdit_2.setPlaceholderText('Default: 5s')
         self.lineEdit_3 = QtGui.QLineEdit(self.centralwidget)
         self.lineEdit_3.setGeometry(QtCore.QRect(10, 30, 181, 31))
         self.lineEdit_3.setObjectName(_fromUtf8("lineEdit_3"))

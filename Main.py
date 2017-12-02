@@ -179,7 +179,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
             connected_server = selected_text
             self.insert_into_tree(selected_text,row)
         if selected_text == "Add New Group":
-            self._new_window = Create_Group1()                                        # Calling the other module (Create Group)
+            self._new_window = Create_Group1(self)                                        # Calling the other module (Create Group)
             self._new_window.show()
         if selected_text in group:
             print "Group"
