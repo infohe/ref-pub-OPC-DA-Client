@@ -54,34 +54,13 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.label_5.setFont(font)
         self.label_5.setObjectName(_fromUtf8("label_5"))
-        self.label_3 = QtGui.QLabel(self.centralwidget)
-        self.label_3.setGeometry(QtCore.QRect(95, 315, 191, 16))
+        self.server_name = QtGui.QLabel(self.centralwidget)
+        self.server_name.setGeometry(QtCore.QRect(95, 315, 191, 16))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Times New Roman"))
         font.setPointSize(10)
-        self.label_3.setFont(font)
-        self.label_3.setObjectName(_fromUtf8("label_3"))
-        self.pushButton = QtGui.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(200, 380, 88, 26))
-        font = QtGui.QFont()
-        font.setPointSize(-1)
-        self.pushButton.setFont(font)
-        self.pushButton.setStyleSheet(_fromUtf8("border: 2px solid gray;\n"
-"color: white;\n"
-"background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #88d, stop: 0.1 #99e, stop: 0.49 #77c, stop: 0.5 #66b, stop: 1 #77c);\n"
-"border-width: 1px;\n"
-"border-color: #339;\n"
-"border-style: solid;\n"
-"border-radius: 8px;\n"
-"padding: 3px;\n"
-"font-size: 10px;\n"
-"padding-left: 5px;\n"
-"padding-right: 5px;\n"
-"min-width: 76px;\n"
-"max-width: 76px;\n"
-"min-height: 18px;\n"
-"max-height: 18px;"))
-        self.pushButton.setObjectName(_fromUtf8("pushButton"))
+        self.server_name.setFont(font)
+        self.server_name.setObjectName(_fromUtf8("server_name"))
         self.label = QtGui.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(9, 315, 49, 16))
         font = QtGui.QFont()
@@ -91,12 +70,12 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.label.setFont(font)
         self.label.setObjectName(_fromUtf8("label"))
-        self.pushButton_3 = QtGui.QPushButton(self.centralwidget)
-        self.pushButton_3.setGeometry(QtCore.QRect(20, 380, 87, 26))
+        self.button_dissconnect = QtGui.QPushButton(self.centralwidget)
+        self.button_dissconnect.setGeometry(QtCore.QRect(10, 380, 87, 26))
         font = QtGui.QFont()
         font.setPointSize(-1)
-        self.pushButton_3.setFont(font)
-        self.pushButton_3.setStyleSheet(_fromUtf8("border: 2px solid gray;\n"
+        self.button_dissconnect.setFont(font)
+        self.button_dissconnect.setStyleSheet(_fromUtf8("border: 2px solid gray;\n"
 "color: white;\n"
 "background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #88d, stop: 0.1 #99e, stop: 0.49 #77c, stop: 0.5 #66b, stop: 1 #77c);\n"
 "border-width: 1px;\n"
@@ -111,7 +90,7 @@ class Ui_MainWindow(object):
 "max-width: 75px;\n"
 "min-height: 18px;\n"
 "max-height: 18px;"))
-        self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
+        self.button_dissconnect.setObjectName(_fromUtf8("button_dissconnect"))
         self.treeWidget = QtGui.QTreeWidget(self.centralwidget)
         self.treeWidget.setGeometry(QtCore.QRect(9, 30, 281, 281))
         self.treeWidget.setStyleSheet(_fromUtf8("QTreeView {\n"
@@ -167,13 +146,13 @@ class Ui_MainWindow(object):
 ""))
         self.treeWidget.setObjectName(_fromUtf8("treeWidget"))
         self.treeWidget.headerItem().setText(0, _fromUtf8("1"))
-        self.label_7 = QtGui.QLabel(self.centralwidget)
-        self.label_7.setGeometry(QtCore.QRect(95, 357, 31, 16))
+        self.server_groups = QtGui.QLabel(self.centralwidget)
+        self.server_groups.setGeometry(QtCore.QRect(95, 357, 31, 16))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Times New Roman"))
         font.setPointSize(9)
-        self.label_7.setFont(font)
-        self.label_7.setObjectName(_fromUtf8("label_7"))
+        self.server_groups.setFont(font)
+        self.server_groups.setObjectName(_fromUtf8("server_groups"))
         self.label_6 = QtGui.QLabel(self.centralwidget)
         self.label_6.setGeometry(QtCore.QRect(9, 357, 48, 16))
         font = QtGui.QFont()
@@ -181,19 +160,19 @@ class Ui_MainWindow(object):
         font.setPointSize(10)
         self.label_6.setFont(font)
         self.label_6.setObjectName(_fromUtf8("label_6"))
-        self.label_4 = QtGui.QLabel(self.centralwidget)
-        self.label_4.setGeometry(QtCore.QRect(95, 336, 41, 16))
+        self.server_status = QtGui.QLabel(self.centralwidget)
+        self.server_status.setGeometry(QtCore.QRect(95, 336, 41, 16))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Times New Roman"))
         font.setPointSize(10)
-        self.label_4.setFont(font)
-        self.label_4.setObjectName(_fromUtf8("label_4"))
-        self.pushButton_2 = QtGui.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(110, 380, 87, 26))
+        self.server_status.setFont(font)
+        self.server_status.setObjectName(_fromUtf8("server_status"))
+        self.button_deletegroup = QtGui.QPushButton(self.centralwidget)
+        self.button_deletegroup.setGeometry(QtCore.QRect(120, 380, 87, 26))
         font = QtGui.QFont()
         font.setPointSize(-1)
-        self.pushButton_2.setFont(font)
-        self.pushButton_2.setStyleSheet(_fromUtf8("border: 2px solid gray;\n"
+        self.button_deletegroup.setFont(font)
+        self.button_deletegroup.setStyleSheet(_fromUtf8("border: 2px solid gray;\n"
 "color: white;\n"
 "background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #88d, stop: 0.1 #99e, stop: 0.49 #77c, stop: 0.5 #66b, stop: 1 #77c);\n"
 "border-width: 1px;\n"
@@ -208,7 +187,7 @@ class Ui_MainWindow(object):
 "max-width: 75px;\n"
 "min-height: 18px;\n"
 "max-height: 18px;"))
-        self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
+        self.button_deletegroup.setObjectName(_fromUtf8("button_deletegroup"))
         self.label_2 = QtGui.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(9, 336, 49, 16))
         font = QtGui.QFont()
@@ -233,12 +212,12 @@ class Ui_MainWindow(object):
         self.tableWidget.setHorizontalHeaderItem(3, item)
         item = QtGui.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(4, item)
-        self.pushButton_4 = QtGui.QPushButton(self.centralwidget)
-        self.pushButton_4.setGeometry(QtCore.QRect(730, 380, 112, 26))
+        self.button_deleteTag = QtGui.QPushButton(self.centralwidget)
+        self.button_deleteTag.setGeometry(QtCore.QRect(730, 380, 112, 26))
         font = QtGui.QFont()
         font.setPointSize(-1)
-        self.pushButton_4.setFont(font)
-        self.pushButton_4.setStyleSheet(_fromUtf8("\n"
+        self.button_deleteTag.setFont(font)
+        self.button_deleteTag.setStyleSheet(_fromUtf8("\n"
 "border: 2px solid gray;\n"
 "color: white;\n"
 "background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #88d, stop: 0.1 #99e, stop: 0.49 #77c, stop: 0.5 #66b, stop: 1 #77c);\n"
@@ -255,7 +234,7 @@ class Ui_MainWindow(object):
 "min-height: 18px;\n"
 "max-height: 18px;\n"
 ""))
-        self.pushButton_4.setObjectName(_fromUtf8("pushButton_4"))
+        self.button_deleteTag.setObjectName(_fromUtf8("button_deleteTag"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 847, 21))
@@ -289,14 +268,13 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.label_5.setText(_translate("MainWindow", "Browse", None))
-        self.label_3.setText(_translate("MainWindow", "None", None))
-        self.pushButton.setText(_translate("MainWindow", "Refresh", None))
+        self.server_name.setText(_translate("MainWindow", "None", None))
         self.label.setText(_translate("MainWindow", "Server   ::", None))
-        self.pushButton_3.setText(_translate("MainWindow", "Disconnect", None))
-        self.label_7.setText(_translate("MainWindow", "0", None))
+        self.button_dissconnect.setText(_translate("MainWindow", "Disconnect", None))
+        self.server_groups.setText(_translate("MainWindow", "0", None))
         self.label_6.setText(_translate("MainWindow", "Groups ::", None))
-        self.label_4.setText(_translate("MainWindow", "offline", None))
-        self.pushButton_2.setText(_translate("MainWindow", "Delete Group", None))
+        self.server_status.setText(_translate("MainWindow", "offline", None))
+        self.button_deletegroup.setText(_translate("MainWindow", "Delete Group", None))
         self.label_2.setText(_translate("MainWindow", "Status   ::", None))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Item Name", None))
@@ -308,7 +286,7 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Quality", None))
         item = self.tableWidget.horizontalHeaderItem(4)
         item.setText(_translate("MainWindow", "TimeStamp", None))
-        self.pushButton_4.setText(_translate("MainWindow", "Delete Tag", None))
+        self.button_deleteTag.setText(_translate("MainWindow", "Delete Tag", None))
         self.menuFIle.setTitle(_translate("MainWindow", "File", None))
         self.actionSave.setText(_translate("MainWindow", "Save", None))
         self.actionOpen.setText(_translate("MainWindow", "Open", None))

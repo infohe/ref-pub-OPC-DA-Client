@@ -21,34 +21,34 @@ class About_window(QtGui.QDialog):
         super(About_window, self).__init__(parent)
         self.setWindowTitle("OPC Client-About")
         self.setGeometry(500,200,600,500)
-        self.label = QtGui.QLabel(self)
+        self.heading = QtGui.QLabel(self)
         label_font = QtGui.QFont("Times", 13, QtGui.QFont.StyleNormal)
-        self.label.setFont(label_font)
-        self.label.move(10,30)
-        self.label.setText("About ")
+        self.heading.setFont(label_font)
+        self.heading.move(10,30)
+        self.heading.setText("About ")
 
-        self.label3 = QtGui.QLabel(self)
-        self.label4 = QtGui.QLabel(self)
-        self.label5 = QtGui.QLabel(self)
-        label3_font = QtGui.QFont("Times", 10, QtGui.QFont.StyleItalic)
-        self.label3.setFont(label3_font)
-        self.label4.setFont(label3_font)
-        self.label5.setFont(label3_font)
-        self.label3.setText("      This is a is a free OPC Client Test Utility, which is pressed with usefulness for testing and investigating ")
-        self.label4.setText("OPC servers and OPC associations. This is built with instinctive UI and easy work process.")
-        self.label5.setText("There might be some bugs or errors , please inform us for improving the Client application.")
-        self.label3.move(10,55)
-        self.label4.move(10,71)
-        self.label5.move(10,90)
+        self.line1 = QtGui.QLabel(self)
+        self.line2 = QtGui.QLabel(self)
+        self.line3 = QtGui.QLabel(self)
+        line_font = QtGui.QFont("Times", 10, QtGui.QFont.StyleItalic)
+        self.line1.setFont(line_font)
+        self.line2.setFont(line_font)
+        self.line3.setFont(line_font)
+        self.line1.setText("      This is a is a free OPC Client Test Utility, which is pressed with usefulness for testing and investigating ")
+        self.line2.setText("OPC servers and OPC associations. This is built with instinctive UI and easy work process.")
+        self.line3.setText("There might be some bugs or errors , please inform us for improving the Client application.")
+        self.line1.move(10,55)
+        self.line2.move(10,71)
+        self.line3.move(10,90)
         pic = QtGui.QLabel(self)
         pic.setPixmap(QtGui.QPixmap("images\pic.png"))
         pic.move(75,400)
         pic.show()
-        self.label2 = QtGui.QLabel(self)
-        self.label2.setText('<a href="https://automationforum.in/">Visit Us/</a>')
-        self.label2.move(255,385)
-        self.label2.setOpenExternalLinks(True)
-        self.label2.show()
+        self.line_link = QtGui.QLabel(self)
+        self.line_link.setText('<a href="https://automationforum.in/">Visit Us/</a>')
+        self.line_link.move(255,385)
+        self.line_link.setOpenExternalLinks(True)
+        self.line_link.show()
 
 
 class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
@@ -57,7 +57,6 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         self.setupUi(self)
         self.setWindowTitle("OPC Client")
         self.treeWidget.setHeaderHidden(True)
-        self.pushButton.clicked.connect(self.refresh)
         global connected_server
         connected_server = ""
         global group , tags ,TableTags
@@ -85,9 +84,9 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
 
         #Button events and Menu events
         self.connect(self.treeWidget,QtCore.SIGNAL("itemDoubleClicked(QTreeWidgetItem *,int)"),self.function)
-        self.pushButton_2.clicked.connect(self.delete_group)
-        self.pushButton_3.clicked.connect(self.disconnect)
-        self.pushButton_4.clicked.connect(self.delete_tag)
+        self.button_deletegroup.clicked.connect(self.delete_group)
+        self.button_dissconnect.clicked.connect(self.disconnect)
+        self.button_deleteTag.clicked.connect(self.delete_tag)
         self.actionAbout_2.triggered.connect(self.about)
         self.actionExit_2.triggered.connect(self.exit)
 
@@ -117,8 +116,8 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         del tags[:]
         del TableTags[:]
         self.treeWidget.clear()
-        self.label_3.setText("None")
-        self.label_4.setText("Offline")
+        self.server_name.setText("None")
+        self.server_status.setText("Offline")
         self.label_.setText("0")
         #opc.close()
 
@@ -147,7 +146,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                     del group[:]
                     for x in data:
                         group.append(x[0])
-                    self.label_7.setText(str(len(group)))                           #update group number
+                    self.server_groups.setText(str(len(group)))                           #update group number
                     QMessageBox.question(self, 'Message', "Deleting the Tag from Table?")
                     for x in tags[indx]:
                         if x in TableTags:                                           #delete tag from table when group is deleted
@@ -186,7 +185,10 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         if any(selected_text in sublist for sublist in tags):
             tag = str(selected_text)
             TableTags.append(tag)
-            QtCore.QTimer.singleShot(10000, lambda: self.insert_into_table())
+            print TableTags
+            self.tableWidget.setRowCount(len(TableTags))
+            self.tableWidget.setColumnCount(5)
+            QtCore.QTimer.singleShot(5000, lambda: self.insert_into_table())
         return 0
 
     def insert_into_tree(self,selected_text,row):
@@ -200,8 +202,8 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         for x in server:
            item1 = QtGui.QTreeWidgetItem(item,[x])
            if x == selected_text:
-                self.label_3.setText(selected_text)
-                self.label_4.setText("Online")
+                self.server_name.setText(selected_text)
+                self.server_status.setText("Online")
                 item5 = QtGui.QTreeWidgetItem(item1,["Add New Group"])
                 self.treeWidget.insertTopLevelItem(row,item1)
                 opc.connect(selected_text)
@@ -227,41 +229,32 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                     for x in tags_list:
                         item3 = QtGui.QTreeWidgetItem(item2,[x])
                     i = i + 1
-                self.label_7.setText(str(len(group)))
+                self.server_groups.setText(str(len(group)))
         self.treeWidget.expandToDepth(row)
         return 0
 
     def insert_into_table(self):
-        self.tableWidget.setRowCount(0)
-        self.tableWidget.setColumnCount(5)
         self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         for tag in TableTags:
+            index_table= TableTags.index(tag)
             tag =str(tag)
             value = opc.read(tag)
             if len(value)== 3:
-                rowcount = self.tableWidget.rowCount()
-                rcount = rowcount+1
-                x = str(rcount)
-                self.tableWidget.setRowCount(rcount)
-                self.tableWidget.setItem(rcount-1,0, QTableWidgetItem(tag))
-                self.tableWidget.setItem(rcount-1,1, QTableWidgetItem(str(value[0])))
-                self.tableWidget.setItem(rcount-1,2, QTableWidgetItem("None"))
-                self.tableWidget.setItem(rcount-1,3, QTableWidgetItem(str(value[1])))
-                self.tableWidget.setItem(rcount-1,4, QTableWidgetItem(str(value[2])))
-                rowcount=0
+                rcount = index_table
+                self.tableWidget.setItem(rcount,0, QTableWidgetItem(tag))
+                self.tableWidget.setItem(rcount,1, QTableWidgetItem(str(value[0])))
+                self.tableWidget.setItem(rcount,2, QTableWidgetItem("None"))
+                self.tableWidget.setItem(rcount,3, QTableWidgetItem(str(value[1])))
+                self.tableWidget.setItem(rcount,4, QTableWidgetItem(str(value[2])))
             if len(value)== 4:
                 rowcount = self.tableWidget.rowCount()
-                rcount = rowcount+1
-                x = str(rcount)
-                self.tableWidget.setRowCount(rcount)
-                self.tableWidget.setItem(rcount-1,0, QTableWidgetItem(tag))
-                self.tableWidget.setItem(rcount-1,1, QTableWidgetItem(str(value[0])))
-                self.tableWidget.setItem(rcount-1,2, QTableWidgetItem(str(value[1])))
-                self.tableWidget.setItem(rcount-1,3, QTableWidgetItem(str(value[2])))
-                self.tableWidget.setItem(rcount-1,4, QTableWidgetItem(str(value[3])))
-                self.label.setText(value)
-                rowcount=0
-        QtCore.QTimer.singleShot(10000, lambda: self.insert_into_table())
+                rcount = index_table
+                self.tableWidget.setItem(rcount,0, QTableWidgetItem(tag))
+                self.tableWidget.setItem(rcount,1, QTableWidgetItem(str(value[0])))
+                self.tableWidget.setItem(rcount,2, QTableWidgetItem(str(value[1])))
+                self.tableWidget.setItem(rcount,3, QTableWidgetItem(str(value[2])))
+                self.tableWidget.setItem(rcount,4, QTableWidgetItem(str(value[3])))
+        QtCore.QTimer.singleShot(5000, lambda: self.insert_into_table())
 
     def refresh(self):
         del group[:]
@@ -275,8 +268,8 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
            item1 = QtGui.QTreeWidgetItem(item,[x])
            if x == serv:
                 row = server.index(serv)
-                self.label_3.setText(serv)
-                self.label_4.setText("Online")
+                self.server_name.setText(serv)
+                self.server_status.setText("Online")
                 item5 = QtGui.QTreeWidgetItem(item1,["Add New Group"])
                 self.treeWidget.insertTopLevelItem(row,item1)
                 opc.connect(serv)
@@ -302,7 +295,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                     for x in list:
                         item3 = QtGui.QTreeWidgetItem(item2,[x])
                     i=i+1
-                self.label_7.setText(str(len(group)))
+                self.server_groups.setText(str(len(group)))
         self.treeWidget.expandToDepth(row)
 
 def main():
