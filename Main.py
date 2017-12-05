@@ -15,16 +15,15 @@ import re
 import time
 
 opc = OpenOPC.client()
-
 class About_window(QtGui.QDialog):
     def __init__(self, parent=None):
         super(About_window, self).__init__(parent)
         self.setWindowTitle("OPC Client-About")
-        self.setGeometry(500,200,600,500)
+        self.setGeometry(500, 200, 600, 500)
         self.heading = QtGui.QLabel(self)
         label_font = QtGui.QFont("Times", 13, QtGui.QFont.StyleNormal)
         self.heading.setFont(label_font)
-        self.heading.move(10,30)
+        self.heading.move(10, 30)
         self.heading.setText("About ")
 
         self.line1 = QtGui.QLabel(self)
@@ -37,16 +36,16 @@ class About_window(QtGui.QDialog):
         self.line1.setText("      This is a is a free OPC Client Test Utility, which is pressed with usefulness for testing and investigating ")
         self.line2.setText("OPC servers and OPC associations. This is built with instinctive UI and easy work process.")
         self.line3.setText("There might be some bugs or errors , please inform us for improving the Client application.")
-        self.line1.move(10,55)
-        self.line2.move(10,71)
-        self.line3.move(10,90)
+        self.line1.move(10, 55)
+        self.line2.move(10, 71)
+        self.line3.move(10, 90)
         pic = QtGui.QLabel(self)
         pic.setPixmap(QtGui.QPixmap("images\pic.png"))
-        pic.move(75,400)
+        pic.move(75, 400)
         pic.show()
         self.line_link = QtGui.QLabel(self)
         self.line_link.setText('<a href="https://automationforum.in/">Visit Us/</a>')
-        self.line_link.move(255,385)
+        self.line_link.move(255, 385)
         self.line_link.setOpenExternalLinks(True)
         self.line_link.show()
 
@@ -59,11 +58,11 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         self.treeWidget.setHeaderHidden(True)
         global connected_server
         connected_server = ""
-        global group , tags ,TableTags
+        global group, tags, TableTags
         TableTags = []
-        group= []
+        group = []
         tags = []
-        global item , item1 , item2, item5
+        global item, item1, item2, item5
         item = QtGui.QTableWidgetItem()
         item1 = QtGui.QTableWidgetItem()
         item5 = QtGui.QTableWidgetItem()
@@ -82,8 +81,8 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                 item1 = QtGui.QTreeWidgetItem(item,[x])
             self.treeWidget.addTopLevelItem(item)
 
-        #Button events and Menu events
-        self.connect(self.treeWidget,QtCore.SIGNAL("itemDoubleClicked(QTreeWidgetItem *,int)"),self.function)
+#Button events and Menu events
+        self.connect(self.treeWidget, QtCore.SIGNAL("itemDoubleClicked(QTreeWidgetItem *,int)"), self.function)
         self.button_deletegroup.clicked.connect(self.delete_group)
         self.button_dissconnect.clicked.connect(self.disconnect)
         self.button_deleteTag.clicked.connect(self.delete_tag)
@@ -124,16 +123,16 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
     def delete_group(self):
         clicked = self.treeWidget.currentItem()
         column = self.treeWidget.currentColumn()
-        if clicked== None :
+        if clicked == None:
             QMessageBox.about(self, "Error", "Select a Group !!")
         else:
             item = clicked.text(column)
             if item in group:
                 result = QMessageBox.question(self, 'Message', "Do you want to delete the group?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
                 if result == QMessageBox.Yes:
-                    item =str(item)
+                    item = str(item)
                     connected_server = connections.server()
-                    connections.delete_G(connected_server,item)
+                    connections.delete_G(connected_server, item)
                     root = self.treeWidget.invisibleRootItem()
                     for item in self.treeWidget.selectedItems():
                         (item.parent() or root).removeChild(item)
@@ -161,8 +160,8 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                     QMessageBox.about(self, "Error", "Select a Group !!")
 
     def delete_tag(self):
-        selected_row= self.tableWidget.currentRow()
-        if selected_row >=0:
+        selected_row = self.tableWidget.currentRow()
+        if selected_row >= 0:
             del TableTags[selected_row]
             self.tableWidget.removeRow(selected_row)
         else:
@@ -173,10 +172,10 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         index = self.treeWidget.currentIndex()
         row = index.row()
         indexes = self.treeWidget.selectedIndexes()
-        server= opc.servers()
+        server = opc.servers()
         if selected_text in server:
             connected_server = selected_text
-            self.insert_into_tree(selected_text,row)
+            self.insert_into_tree(selected_text, row)
         if selected_text == "Add New Group":
             self._new_window = Create_Group1(self)                                        # Calling the other module (Create Group)
             self._new_window.show()
@@ -191,69 +190,72 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
             QtCore.QTimer.singleShot(5000, lambda: self.insert_into_table())
         return 0
 
-    def insert_into_tree(self,selected_text,row):
+    def insert_into_tree(self, selected_text, row):
         del group[:]
         del tags[:]
-        connections.serve = selected_text                                            # Saving the Current servername
+        connections.serve = selected_text                                            # Saving the Current server name
         self.treeWidget.clear()
-        server= opc.servers()
+        self.create_tree(selected_text, row)
+        return 0
+
+    def create_tree(self, selected_text, row):
+        server = opc.servers()
         item = QtGui.QTreeWidgetItem(["Servers"])
         self.treeWidget.addTopLevelItem(item)
         for x in server:
-           item1 = QtGui.QTreeWidgetItem(item,[x])
+           item1 = QtGui.QTreeWidgetItem(item, [x])
            if x == selected_text:
                 self.server_name.setText(selected_text)
                 self.server_status.setText("Online")
-                item5 = QtGui.QTreeWidgetItem(item1,["Add New Group"])
-                self.treeWidget.insertTopLevelItem(row,item1)
+                item5 = QtGui.QTreeWidgetItem(item1, ["Add New Group"])
+                self.treeWidget.insertTopLevelItem(row, item1)
                 opc.connect(selected_text)
                 connections.connect()
                 connected_server = connections.server()
                 data = connections.read_from_db(connected_server)                   #Passing server name to conn DB
                 y = 0
-                for x in data:
-                    group.append(x[0])
-                    temp1 = str(x[1])
-                    temp2 = x[1]
+                for con1 in data:
+                    group.append(con1[0])
+                    temp1 = str(con1[1])
+                    temp2 = con1[1]
                     temp2 = str(temp2)
-                    temp2= temp2.replace("'","")
-                    temp2= temp2.replace("[","")
-                    temp2= temp2.replace("]","")
-                    temp2 =''.join(temp2)
-                    temp1= re.split("; |, |' ",temp2)
+                    temp2 = temp2.replace("'", "")
+                    temp2 = temp2.replace("[", "")
+                    temp2 = temp2.replace("]", "")
+                    temp2 = ''.join(temp2)
+                    temp1 = re.split("; |, |' ", temp2)
                     tags.append(temp1)
-                i=0
-                for x in group:
-                    item2 = QtGui.QTreeWidgetItem(item1,[x])
+                i = 0
+                for con2 in group:
+                    item2 = QtGui.QTreeWidgetItem(item1, [con2])
                     tags_list = tags[i]
-                    for x in tags_list:
-                        item3 = QtGui.QTreeWidgetItem(item2,[x])
-                    i = i + 1
+                    for con3 in tags_list:
+                        item3 = QtGui.QTreeWidgetItem(item2, [con3])
+                    i += 1
                 self.server_groups.setText(str(len(group)))
         self.treeWidget.expandToDepth(row)
-        return 0
 
     def insert_into_table(self):
         self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         for tag in TableTags:
-            index_table= TableTags.index(tag)
-            tag =str(tag)
+            index_table = TableTags.index(tag)
+            tag = str(tag)
             value = opc.read(tag)
-            if len(value)== 3:
+            if len(value) == 3:
                 rcount = index_table
-                self.tableWidget.setItem(rcount,0, QTableWidgetItem(tag))
-                self.tableWidget.setItem(rcount,1, QTableWidgetItem(str(value[0])))
-                self.tableWidget.setItem(rcount,2, QTableWidgetItem("None"))
-                self.tableWidget.setItem(rcount,3, QTableWidgetItem(str(value[1])))
-                self.tableWidget.setItem(rcount,4, QTableWidgetItem(str(value[2])))
-            if len(value)== 4:
+                self.tableWidget.setItem(rcount, 0, QTableWidgetItem(tag))
+                self.tableWidget.setItem(rcount, 1, QTableWidgetItem(str(value[0])))
+                self.tableWidget.setItem(rcount, 2, QTableWidgetItem("None"))
+                self.tableWidget.setItem(rcount, 3, QTableWidgetItem(str(value[1])))
+                self.tableWidget.setItem(rcount, 4, QTableWidgetItem(str(value[2])))
+            if len(value) == 4:
                 rowcount = self.tableWidget.rowCount()
                 rcount = index_table
-                self.tableWidget.setItem(rcount,0, QTableWidgetItem(tag))
-                self.tableWidget.setItem(rcount,1, QTableWidgetItem(str(value[0])))
-                self.tableWidget.setItem(rcount,2, QTableWidgetItem(str(value[1])))
-                self.tableWidget.setItem(rcount,3, QTableWidgetItem(str(value[2])))
-                self.tableWidget.setItem(rcount,4, QTableWidgetItem(str(value[3])))
+                self.tableWidget.setItem(rcount, 0, QTableWidgetItem(tag))
+                self.tableWidget.setItem(rcount, 1, QTableWidgetItem(str(value[0])))
+                self.tableWidget.setItem(rcount, 2, QTableWidgetItem(str(value[1])))
+                self.tableWidget.setItem(rcount, 3, QTableWidgetItem(str(value[2])))
+                self.tableWidget.setItem(rcount, 4, QTableWidgetItem(str(value[3])))
         QtCore.QTimer.singleShot(5000, lambda: self.insert_into_table())
 
     def refresh(self):
@@ -262,41 +264,8 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         self.treeWidget.clear()
         serv = connections.serve
         server= opc.servers()
-        item = QtGui.QTreeWidgetItem(["Servers"])
-        self.treeWidget.addTopLevelItem(item)
-        for x in server:
-           item1 = QtGui.QTreeWidgetItem(item,[x])
-           if x == serv:
-                row = server.index(serv)
-                self.server_name.setText(serv)
-                self.server_status.setText("Online")
-                item5 = QtGui.QTreeWidgetItem(item1,["Add New Group"])
-                self.treeWidget.insertTopLevelItem(row,item1)
-                opc.connect(serv)
-                connections.connect()
-                connected_server = connections.server()
-                data = connections.read_from_db(connected_server)
-                y = 0
-                for x in data:
-                    group.append(x[0])
-                    temp = str(x[1])
-                    temp3 = x[1]
-                    temp3 = str(temp3)
-                    temp3= temp3.replace("'","")
-                    temp3= temp3.replace("[","")
-                    temp3= temp3.replace("]","")
-                    temp3 =''.join(temp3)
-                    temp= re.split("; |, |' ",temp3)
-                    tags.append(temp)
-                i=0
-                for x in group:
-                    item2 = QtGui.QTreeWidgetItem(item1,[x])
-                    list = tags[i]
-                    for x in list:
-                        item3 = QtGui.QTreeWidgetItem(item2,[x])
-                    i=i+1
-                self.server_groups.setText(str(len(group)))
-        self.treeWidget.expandToDepth(row)
+        row = server.index(serv)
+        self.create_tree(serv, row)
 
 def main():
     app = QtGui.QApplication(sys.argv)
