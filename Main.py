@@ -13,7 +13,6 @@ from Create_Group import Create_Group1
 import sqlite3
 import re
 import time
-
 opc = OpenOPC.client()
 class About_window(QtGui.QDialog):
     def __init__(self, parent=None):
@@ -66,9 +65,9 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         item = QtGui.QTableWidgetItem()
         item1 = QtGui.QTableWidgetItem()
         item5 = QtGui.QTableWidgetItem()
-        item2 =QtGui.QTableWidgetItem()
+        item2 = QtGui.QTableWidgetItem()
 
-        server= opc.servers()
+        server = opc.servers()
         item = QtGui.QTreeWidgetItem(["Servers"])
         if not item:
             try:
@@ -78,11 +77,11 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                 print "Error"
         else:
             for x in server:
-                item1 = QtGui.QTreeWidgetItem(item,[x])
+                item1 = QtGui.QTreeWidgetItem(item, [x])
             self.treeWidget.addTopLevelItem(item)
 
 #Button events and Menu events
-        self.connect(self.treeWidget, QtCore.SIGNAL("itemDoubleClicked(QTreeWidgetItem *,int)"), self.function)
+        self.connect(self.treeWidget, QtCore.SIGNAL("itemDoubleClicked(QTreeWidgetItem *,int)"), self.check_condition)
         self.button_deletegroup.clicked.connect(self.delete_group)
         self.button_dissconnect.clicked.connect(self.disconnect)
         self.button_deleteTag.clicked.connect(self.delete_tag)
@@ -141,11 +140,11 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                         indx = group.index(item)
                         group.remove(item)
                     connected_server = connections.server()
-                    data = connections.read_from_db(connected_server)              #Read groups and tags from DB
+                    data = connections.read_from_db(connected_server)                 #Read groups and tags from DB
                     del group[:]
                     for x in data:
                         group.append(x[0])
-                    self.server_groups.setText(str(len(group)))                           #update group number
+                    self.server_groups.setText(str(len(group)))                      #update group number
                     QMessageBox.question(self, 'Message', "Deleting the Tag from Table?")
                     for x in tags[indx]:
                         if x in TableTags:                                           #delete tag from table when group is deleted
@@ -167,7 +166,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         else:
             QMessageBox.about(self, "Error", "Select a Tag in table !!")
 
-    def function(self, clicked, column):
+    def check_condition(self, clicked, column):
         selected_text = clicked.text(column)
         index = self.treeWidget.currentIndex()
         row = index.row()
@@ -177,14 +176,13 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
             connected_server = selected_text
             self.insert_into_tree(selected_text, row)
         if selected_text == "Add New Group":
-            self._new_window = Create_Group1(self)                                        # Calling the other module (Create Group)
+            self._new_window = Create_Group1(self)                                     # Calling the other module (Create Group)
             self._new_window.show()
         if selected_text in group:
             print "Group"
         if any(selected_text in sublist for sublist in tags):
             tag = str(selected_text)
             TableTags.append(tag)
-            print TableTags
             self.tableWidget.setRowCount(len(TableTags))
             self.tableWidget.setColumnCount(5)
             QtCore.QTimer.singleShot(5000, lambda: self.insert_into_table())
@@ -241,16 +239,15 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
             index_table = TableTags.index(tag)
             tag = str(tag)
             value = opc.read(tag)
+            #rowcount = self.tableWidget.rowCount()
+            rcount = index_table
             if len(value) == 3:
-                rcount = index_table
                 self.tableWidget.setItem(rcount, 0, QTableWidgetItem(tag))
                 self.tableWidget.setItem(rcount, 1, QTableWidgetItem(str(value[0])))
                 self.tableWidget.setItem(rcount, 2, QTableWidgetItem("None"))
                 self.tableWidget.setItem(rcount, 3, QTableWidgetItem(str(value[1])))
                 self.tableWidget.setItem(rcount, 4, QTableWidgetItem(str(value[2])))
             if len(value) == 4:
-                rowcount = self.tableWidget.rowCount()
-                rcount = index_table
                 self.tableWidget.setItem(rcount, 0, QTableWidgetItem(tag))
                 self.tableWidget.setItem(rcount, 1, QTableWidgetItem(str(value[0])))
                 self.tableWidget.setItem(rcount, 2, QTableWidgetItem(str(value[1])))
@@ -263,15 +260,15 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         del tags[:]
         self.treeWidget.clear()
         serv = connections.serve
-        server= opc.servers()
+        server = opc.servers()
         row = server.index(serv)
         self.create_tree(serv, row)
+
 
 def main():
     app = QtGui.QApplication(sys.argv)
     form = MainWindow()
     form.show()
     app.exec_()
-
 if __name__ == '__main__':
     main()

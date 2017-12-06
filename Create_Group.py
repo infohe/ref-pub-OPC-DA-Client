@@ -39,7 +39,7 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
         self.button_createGroup.clicked.connect(self.load_tree)
         self.button_searchTag.clicked.connect(self.search)
         self.button_deleteTag.clicked.connect(self.delete_Tag)
-        self.connect(self.treeWidget, QtCore.SIGNAL("itemDoubleClicked(QTreeWidgetItem *,int)"), self.function)
+        self.connect(self.treeWidget, QtCore.SIGNAL("itemDoubleClicked(QTreeWidgetItem *,int)"), self.check_condition)
 
     def search(self):
         input_tag = self.lineEdit_searchTag.text()
@@ -77,7 +77,6 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
                 QMessageBox.about(self, "Error", " Update rate is 5 seconds!!")
                 rate = "5"
              self.create_group(group, rate)
-
         return 0
 
     def create_group(self, group, rate):
@@ -131,7 +130,7 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
             self.listWidget.addItem(tag)
             Tarray.append(tag)
 
-    def function(self, clicked, column):
+    def check_condition(self, clicked, column):
         add = clicked.text(column)
         add = str(add)
         if add == "Tags":
@@ -154,6 +153,8 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
         for item in listItems:
             self.listWidget.takeItem(self.listWidget.row(item))
         self.listWidget.update()
+
+
 def main():
     app = QtGui.QApplication(sys.argv)
     form = Create_Group1()
