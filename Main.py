@@ -55,8 +55,9 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         self.setupUi(self)
         self.setWindowTitle("OPC Client")
         self.treeWidget.setHeaderHidden(True)
-        global connected_server
+        global connected_server, group_index
         connected_server = ""
+        group_index = ""
         global group, tags, TableTags
         TableTags = []
         group = []
@@ -82,6 +83,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
 
 #Button events and Menu events
         self.connect(self.treeWidget, QtCore.SIGNAL("itemDoubleClicked(QTreeWidgetItem *,int)"), self.check_condition)
+        self.connect(self.treeWidget, QtCore.SIGNAL("itemClicked(QTreeWidgetItem *,int)"), self.condition_tag)
         self.button_deletegroup.clicked.connect(self.delete_group)
         self.button_dissconnect.clicked.connect(self.disconnect)
         self.button_deleteTag.clicked.connect(self.delete_tag)
@@ -161,10 +163,43 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
     def delete_tag(self):
         selected_row = self.tableWidget.currentRow()
         if selected_row >= 0:
+            temp = connections.group()                              #index of the group which tag is
+            cell = self.tableWidget.item(selected_row,0).text()     #tag name from table
+            indx = tags[temp].index(cell)                           #index of tag in group[num]
+            current_server = connections.server()
+            group_name = group[temp]
+            new_tags = tags[temp]
+            QMessageBox.about(self, "Remove", "Remove the tag ?")
+            del new_tags[indx]
+            connections.delete_tag(current_server,new_tags,group_name)
+            print "Tag name:" + cell
+            print "group pos:" + str(temp)
+            print "tag in Main array:" + str(indx)
             del TableTags[selected_row]
+            self.refresh()
             self.tableWidget.removeRow(selected_row)
         else:
             QMessageBox.about(self, "Error", "Select a Tag in table !!")
+
+    def condition_tag(self, clicked, column):
+        selected_text = clicked.text(column)
+        index = self.treeWidget.currentIndex()
+        row = index.row()
+        indexes = self.treeWidget.selectedIndexes()
+        server = opc.servers()
+        if selected_text in group:
+            del TableTags[:]
+            print "Group"
+            group_index = group.index(selected_text)
+            connections.selected_group = group_index                                            # Saving the Current group
+            print group_index
+            for tag in tags[group_index]:
+                TableTags.append(tag)
+            self.tableWidget.setRowCount(len(TableTags))
+            self.tableWidget.setColumnCount(5)
+            QtCore.QTimer.singleShot(2000, lambda: self.insert_into_table())
+        return 0
+
 
     def check_condition(self, clicked, column):
         selected_text = clicked.text(column)
@@ -178,15 +213,10 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         if selected_text == "Add New Group":
             self._new_window = Create_Group1(self)                                     # Calling the other module (Create Group)
             self._new_window.show()
-        if selected_text in group:
-            print "Group"
-        if any(selected_text in sublist for sublist in tags):
-            tag = str(selected_text)
-            TableTags.append(tag)
-            self.tableWidget.setRowCount(len(TableTags))
-            self.tableWidget.setColumnCount(5)
-            QtCore.QTimer.singleShot(5000, lambda: self.insert_into_table())
         return 0
+        if any(selected_text in sublist for sublist in tags):
+            print "tag"
+
 
     def insert_into_tree(self, selected_text, row):
         del group[:]
@@ -235,21 +265,19 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
 
     def insert_into_table(self):
         self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tableWidget.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         for tag in TableTags:
             index_table = TableTags.index(tag)
             tag = str(tag)
             value = opc.read(tag)
-            #rowcount = self.tableWidget.rowCount()
             rcount = index_table
+            self.tableWidget.setItem(rcount, 0, QTableWidgetItem(tag))
+            self.tableWidget.setItem(rcount, 1, QTableWidgetItem(str(value[0])))
             if len(value) == 3:
-                self.tableWidget.setItem(rcount, 0, QTableWidgetItem(tag))
-                self.tableWidget.setItem(rcount, 1, QTableWidgetItem(str(value[0])))
                 self.tableWidget.setItem(rcount, 2, QTableWidgetItem("None"))
                 self.tableWidget.setItem(rcount, 3, QTableWidgetItem(str(value[1])))
                 self.tableWidget.setItem(rcount, 4, QTableWidgetItem(str(value[2])))
             if len(value) == 4:
-                self.tableWidget.setItem(rcount, 0, QTableWidgetItem(tag))
-                self.tableWidget.setItem(rcount, 1, QTableWidgetItem(str(value[0])))
                 self.tableWidget.setItem(rcount, 2, QTableWidgetItem(str(value[1])))
                 self.tableWidget.setItem(rcount, 3, QTableWidgetItem(str(value[2])))
                 self.tableWidget.setItem(rcount, 4, QTableWidgetItem(str(value[3])))
