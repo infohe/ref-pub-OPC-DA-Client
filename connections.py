@@ -39,7 +39,7 @@ def delete_tag(current_server,new_tags,group_name):
     group_name = str(group_name)
     new_tags=str(new_tags)
     current_server= str(current_server)
-    c.execute('''UPDATE table1 SET tags = ? WHERE groupn = ? AND server = ?''', [new_tags, group_name,current_server,])
+    c.execute("UPDATE table1 SET tags = ? WHERE groupn = ? AND server = ?", [new_tags, group_name,current_server,])
     conn.commit()
 
 def disconnect():

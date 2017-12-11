@@ -172,9 +172,6 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
             QMessageBox.about(self, "Remove", "Remove the tag ?")
             del new_tags[indx]
             connections.delete_tag(current_server,new_tags,group_name)
-            print "Tag name:" + cell
-            print "group pos:" + str(temp)
-            print "tag in Main array:" + str(indx)
             del TableTags[selected_row]
             self.refresh()
             self.tableWidget.removeRow(selected_row)
@@ -189,10 +186,8 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         server = opc.servers()
         if selected_text in group:
             del TableTags[:]
-            print "Group"
             group_index = group.index(selected_text)
             connections.selected_group = group_index                                            # Saving the Current group
-            print group_index
             for tag in tags[group_index]:
                 TableTags.append(tag)
             self.tableWidget.setRowCount(len(TableTags))
@@ -286,6 +281,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
     def refresh(self):
         del group[:]
         del tags[:]
+
         self.treeWidget.clear()
         serv = connections.serve
         server = opc.servers()
