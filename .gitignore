@@ -30,3 +30,5 @@ Temporary Items
 .idea/
 
 *.pyc
+
+*.db
