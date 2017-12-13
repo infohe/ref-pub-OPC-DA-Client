@@ -5,8 +5,12 @@ import re
 import sqlite3
 global serve
 serve = ''
+global selected_group
+selected_group = ''
 conn = sqlite3.connect('opc_client.db')
 c = conn.cursor()
+def group():
+    return selected_group
 def server():
     return serve
 def connect():
@@ -25,12 +29,20 @@ def delete_G(servern, group):
     group = str(group)
     conn.execute("DELETE FROM table1 where server = ? AND groupn = ?;", (serv , group))
     conn.commit()
-    print "deleted"
 def read_from_db(serv):
     serv = str(serv)
     c.execute("SELECT groupn, tags, update1 FROM table1 where server = ?", (serv,))
     data = c.fetchall()
     return data
+
+def delete_tag(current_server,new_tags,group_name):
+    group_name = str(group_name)
+    new_tags=str(new_tags)
+    current_server= str(current_server)
+    c.execute("UPDATE table1 SET tags = ? WHERE groupn = ? AND server = ?", [new_tags, group_name,current_server,])
+    conn.commit()
+
 def disconnect():
     c.close()
     conn.close()
+
