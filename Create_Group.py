@@ -4,6 +4,7 @@ import sys
 from PyQt4.QtGui import *
 import OpenOPC
 from PyQt4 import QtGui, QtCore
+from PyQt4.QtGui import QApplication, QCompleter, QLineEdit, QStringListModel
 from PyQt4.QtCore import pyqtSlot
 import os
 import Create_Group_UI
@@ -12,7 +13,7 @@ import sqlite3
 opc = OpenOPC.client()
 
 class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
-    global Tarray, Main_Tags, Sub_Tags
+    global Tarray, Main_Tags, Sub_Tags, Tag_list
     Main_Tags = []
     Sub_Tags = []
     Tarray = []
@@ -28,15 +29,15 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
         self.comboBox.addItem(" select")
         self.treeWidget.setHeaderHidden(True)
         s_ind = 0
-        list = opc.list('*',recursive=True)
-        for x in list:
+        Tag_list = opc.list('*',recursive=True)
+        for x in Tag_list:
             str_list = x.split('.')
             tag = str_list[0]
             if tag in Main_Tags:
                 print "Exist"
             else:
-                ind = list. index(x)
-                array = list[s_ind:ind]
+                ind = Tag_list. index(x)
+                array = Tag_list[s_ind:ind]
                 if not array:
                     print "do nothing"
                 else:
@@ -46,12 +47,24 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
         for y in Main_Tags:
             self.comboBox.addItem(y)
 
+        edit = self.lineEdit_searchTag
+        completer = QCompleter()
+        edit.setCompleter(completer)
+        model = QStringListModel()
+        completer.setModel(model)
+        self.get_data(model,Tag_list)
+
         self.comboBox.activated[str].connect(self.onActivate)
         self.button_cancel.clicked.connect(QtCore.QCoreApplication.instance().quit)
         self.button_createGroup.clicked.connect(self.load_tree)
         self.button_searchTag.clicked.connect(self.search)
         self.button_deleteTag.clicked.connect(self.delete_Tag)
         self.connect(self.treeWidget, QtCore.SIGNAL("itemDoubleClicked(QTreeWidgetItem *,int)"), self.check_condition)
+
+    #Tag_list = opc.list('*',recursive=True)
+    def get_data(self,model,Tag_list):
+        print Tag_list
+        model.setStringList = (Tag_list)
 
     def search(self):
         input_tag = self.lineEdit_searchTag.text()
