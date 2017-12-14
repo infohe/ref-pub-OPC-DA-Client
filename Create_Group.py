@@ -1,5 +1,5 @@
 __author__ = 'AKHIL'
-
+import numpy as np
 import sys
 from PyQt4.QtGui import *
 import OpenOPC
@@ -12,7 +12,9 @@ import sqlite3
 opc = OpenOPC.client()
 
 class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
-    global Tarray
+    global Tarray, Main_Tags, Sub_Tags
+    Main_Tags = []
+    Sub_Tags = []
     Tarray = []
     global connected_server
     def __init__(self, parent=None):
@@ -25,14 +27,24 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
         self.comboData = ['None']
         self.comboBox.addItem(" select")
         self.treeWidget.setHeaderHidden(True)
-        if connected_server == 'Matrikon.OPC.Simulation.1':
-            comboData = opc.list('Simulation Items')
-            for y in comboData:
-                self.comboBox.addItem(y)
-        else:
-            comboData = opc.list()
-            for y in comboData:
-                self.comboBox.addItem(y)
+        s_ind = 0
+        list = opc.list('*',recursive=True)
+        for x in list:
+            str_list = x.split('.')
+            tag = str_list[0]
+            if tag in Main_Tags:
+                print "Exist"
+            else:
+                ind = list. index(x)
+                array = list[s_ind:ind]
+                if not array:
+                    print "do nothing"
+                else:
+                    Sub_Tags.append([array])
+                Main_Tags.append(tag)
+                s_ind = ind
+        for y in Main_Tags:
+            self.comboBox.addItem(y)
 
         self.comboBox.activated[str].connect(self.onActivate)
         self.button_cancel.clicked.connect(QtCore.QCoreApplication.instance().quit)
@@ -43,21 +55,7 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
 
     def search(self):
         input_tag = self.lineEdit_searchTag.text()
-        tag_array = []
-        if connected_server == 'Matrikon.OPC.Simulation.1':
-            data = opc.list('Simulation Items')
-            for y in data:
-                data = str(y)
-                search = 'Simulation Items.' + data
-                data = opc.list(search)
-                tag_array.append(data)
-        else:
-            data = opc.list()
-            for y in data:
-                data = str(y)
-                data = opc.list(data)
-                tag_array.append(data)
-        if any(input_tag in sublist for sublist in tag_array):
+        if any(input_tag in sublist for sublist in Sub_Tags):
             result = QMessageBox.question(self, 'Message', "The tag has been Found !! \n Do you want to insert it ?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if result == QMessageBox.Yes:
                 self.Add_to_tree(input_tag)
@@ -95,32 +93,19 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
         self.comboData = [text]
         self.comboBox.addItems(self.comboData)
         self.treeWidget.setHeaderHidden(True)
-        if connected_server == 'Matrikon.OPC.Simulation.1':
-            comboData = opc.list('Simulation Items')
-            for y in comboData:
-                self.comboBox.addItem(y)
-            self.comboBox.activated[str].connect(self.onActivate)
-            self.treeWidget.clear()
-            strt = "Simulation Items." + text
-            tag = str(strt)
-            list = opc.list(tag)
-            item = QtGui.QTreeWidgetItem(["Tags"])
-            for x in list:
-               item2 = QtGui.QTreeWidgetItem(item, [x])
-            self.treeWidget.addTopLevelItem(item)
-        else:
-            comboData = opc.list()
-            for y in comboData:
-                self.comboBox.addItem(y)
-            self.comboBox.activated[str].connect(self.onActivate)
-            self.treeWidget.clear()
-            strt = text
-            tag = str(strt)
-            list = opc.list(tag)
-            item = QtGui.QTreeWidgetItem(["Tags"])
-            for x in list:
-               item2 = QtGui.QTreeWidgetItem(item, [x])
-            self.treeWidget.addTopLevelItem(item)
+
+        for y in Main_Tags:
+            self.comboBox.addItem(y)
+        self.comboBox.activated[str].connect(self.onActivate)
+        self.treeWidget.clear()
+        indx = Main_Tags.index(text)
+        item = QtGui.QTreeWidgetItem(["Tags"])
+        list = Sub_Tags[indx]
+        temp = np.array(list)
+        list = temp.ravel()
+        for x in list:
+            item2 = QtGui.QTreeWidgetItem(item, [x])
+        self.treeWidget.addTopLevelItem(item)
 
     def Add_to_tree(self, tag):
         list_item = self.listWidgetName.findItems(tag, QtCore.Qt.MatchExactly)
