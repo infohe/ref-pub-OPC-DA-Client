@@ -58,10 +58,11 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         global connected_server, group_index
         connected_server = ""
         group_index = ""
-        global group, tags, TableTags
+        global group, tags, TableTags, update_rate
         TableTags = []
         group = []
         tags = []
+        update_rate = []
         global item, item1, item2, item5
         item = QtGui.QTableWidgetItem()
         item1 = QtGui.QTableWidgetItem()
@@ -101,7 +102,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         del TableTags[:]
         del group[:]
         del tags[:]
-        del TableTags[:]
+        del update_rate[:]
         connections.disconnect()
         self.close()
 
@@ -115,6 +116,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         del group[:]
         del tags[:]
         del TableTags[:]
+        del update_rate[:]
         self.treeWidget.clear()
         self.server_name.setText("None")
         self.server_status.setText("Offline")
@@ -132,6 +134,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                 result = QMessageBox.question(self, 'Message', "Do you want to delete the group?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
                 if result == QMessageBox.Yes:
                     item = str(item)
+                    opc.remove(item)
                     connected_server = connections.server()
                     connections.delete_G(connected_server, item)
                     root = self.treeWidget.invisibleRootItem()
@@ -173,6 +176,11 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
             del new_tags[indx]
             connections.delete_tag(current_server,new_tags,group_name)
             del TableTags[selected_row]
+            opc.remove(group_name)
+            tags_ = tags[temp]
+            g_name = group_name
+            u_rate = update_rate[temp]
+            opc.read(tags_, group = g_name, update= u_rate)
             self.refresh()
             self.tableWidget.removeRow(selected_row)
         else:
@@ -216,6 +224,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
     def insert_into_tree(self, selected_text, row):
         del group[:]
         del tags[:]
+        del update_rate[:]
         connections.serve = selected_text                                            # Saving the Current server name
         self.treeWidget.clear()
         self.create_tree(selected_text, row)
@@ -238,6 +247,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                 data = connections.read_from_db(connected_server)                   #Passing server name to conn DB
                 y = 0
                 for con1 in data:
+                    update_rate.append(con1[2])
                     group.append(con1[0])
                     temp1 = str(con1[1])
                     temp2 = con1[1]
@@ -252,6 +262,10 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                 for con2 in group:
                     item2 = QtGui.QTreeWidgetItem(item1, [con2])
                     tags_list = tags[i]
+                    tags_ = tags[i]
+                    g_name = group[i]
+                    u_rate = update_rate[i]
+                    opc.read(tags_, group = g_name, update= u_rate)
                     for con3 in tags_list:
                         item3 = QtGui.QTreeWidgetItem(item2, [con3])
                     i += 1
@@ -261,26 +275,30 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
     def insert_into_table(self):
         self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tableWidget.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        for tag in TableTags:
-            index_table = TableTags.index(tag)
-            tag = str(tag)
-            value = opc.read(tag)
+        group_ind = connections.group()
+        group_name = group[group_ind]
+        data = opc.read(group = group_name)
+        for value in data:
+            print value
+            index_table = TableTags.index(value[0])
             rcount = index_table
-            self.tableWidget.setItem(rcount, 0, QTableWidgetItem(tag))
-            self.tableWidget.setItem(rcount, 1, QTableWidgetItem(str(value[0])))
-            if len(value) == 3:
-                self.tableWidget.setItem(rcount, 2, QTableWidgetItem("None"))
-                self.tableWidget.setItem(rcount, 3, QTableWidgetItem(str(value[1])))
-                self.tableWidget.setItem(rcount, 4, QTableWidgetItem(str(value[2])))
+            self.tableWidget.setItem(rcount, 0, QTableWidgetItem(value[0]))
+            self.tableWidget.setItem(rcount, 1, QTableWidgetItem(str(value[1])))
             if len(value) == 4:
-                self.tableWidget.setItem(rcount, 2, QTableWidgetItem(str(value[1])))
+                self.tableWidget.setItem(rcount, 2, QTableWidgetItem("None"))
                 self.tableWidget.setItem(rcount, 3, QTableWidgetItem(str(value[2])))
                 self.tableWidget.setItem(rcount, 4, QTableWidgetItem(str(value[3])))
+            if len(value) == 5:
+                self.tableWidget.setItem(rcount, 2, QTableWidgetItem(str(value[2])))
+                self.tableWidget.setItem(rcount, 3, QTableWidgetItem(str(value[3])))
+                self.tableWidget.setItem(rcount, 4, QTableWidgetItem(str(value[4])))
         QtCore.QTimer.singleShot(5000, lambda: self.insert_into_table())
 
     def refresh(self):
         del group[:]
         del tags[:]
+        del update_rate[:]
+        opc.remove(opc.groups())
 
         self.treeWidget.clear()
         serv = connections.serve
