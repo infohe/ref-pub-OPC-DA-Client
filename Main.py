@@ -53,7 +53,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
     def __init__(self):
         super(self.__class__, self).__init__()
         self.setupUi(self)
-        self.setWindowTitle("OPC Client")
+        self.setWindowTitle("OPC Test Client")
         self.treeWidget.setHeaderHidden(True)
         global connected_server, group_index
         connected_server = ""
@@ -69,6 +69,9 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         item5 = QtGui.QTableWidgetItem()
         item2 = QtGui.QTableWidgetItem()
 
+        header = self.tableWidget.horizontalHeader()
+        for i in range(5):
+            header.setResizeMode(i, QtGui.QHeaderView.Stretch)
         server = opc.servers()
         item = QtGui.QTreeWidgetItem(["Servers"])
         if not item:
@@ -310,6 +313,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
 def main():
     app = QtGui.QApplication(sys.argv)
     form = MainWindow()
+    app.setWindowIcon(QtGui.QIcon('images/icon.jpg'))
     form.show()
     app.exec_()
 if __name__ == '__main__':

@@ -13,21 +13,28 @@ import sqlite3
 opc = OpenOPC.client()
 
 class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
-    global Tarray, Main_Tags, Sub_Tags, Tag_list
+    global Tarray, Main_Tags, Sub_Tags, Tag_list, group_list
     Main_Tags = []
     Sub_Tags = []
     Tarray = []
+    group_list = []
+    Tag_list = []
     global connected_server
     def __init__(self, parent=None):
         super(self.__class__, self).__init__()
         self.parent = parent;
         self.setupUi(self)
-        self.setWindowTitle("OPC Client- Create Group")
+        self.setWindowTitle("OPC Test Client- Create Group")
         connected_server = connections.server()
         opc.connect(connected_server)
         self.comboData = ['None']
-        self.comboBox.addItem(" select")
+        self.comboBox.addItem(" Select")
         self.treeWidget.setHeaderHidden(True)
+
+        connected_server = connections.server()
+        data = connections.read_from_db(connected_server)
+        for con1 in data:
+            group_list.append(con1[0])
         s_ind = 0
         Tag_list = opc.list('*',recursive=True)
         for x in Tag_list:
@@ -46,13 +53,22 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
                 s_ind = ind
         for y in Main_Tags:
             self.comboBox.addItem(y)
-
         edit = self.lineEdit_searchTag
         completer = QCompleter()
         edit.setCompleter(completer)
         model = QStringListModel()
         completer.setModel(model)
         self.get_data(model,Tag_list)
+
+        line_g = self.lineEdit_GroupName
+        regex = QtCore.QRegExp("[a-z-A-Z-0-9-@-#-$_]+")
+        validator = QtGui.QRegExpValidator(regex)
+        line_g.setValidator(validator)
+
+        line_update = self.lineEdit_UpdateRate
+        regex2 = QtCore.QRegExp("[0-9]+")
+        validator2 = QtGui.QRegExpValidator(regex2)
+        line_update.setValidator(validator2)
 
         self.comboBox.activated[str].connect(self.onActivate)
         self.button_cancel.clicked.connect(QtCore.QCoreApplication.instance().quit)
@@ -61,19 +77,16 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
         self.button_deleteTag.clicked.connect(self.delete_Tag)
         self.connect(self.treeWidget, QtCore.SIGNAL("itemDoubleClicked(QTreeWidgetItem *,int)"), self.check_condition)
 
-    #Tag_list = opc.list('*',recursive=True)
     def get_data(self,model,Tag_list):
-        print Tag_list
-        model.setStringList = (Tag_list)
+        model.setStringList(Tag_list)
 
-    def search(self):
+    def search(self,Tag_list):
         input_tag = self.lineEdit_searchTag.text()
-        if any(input_tag in sublist for sublist in Sub_Tags):
+        check_list = opc.list('*',recursive=True)
+        if input_tag in check_list:
             result = QMessageBox.question(self, 'Message', "The tag has been Found !! \n Do you want to insert it ?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if result == QMessageBox.Yes:
-                self.Add_to_tree(input_tag)
-            else:
-                print "No"
+                self.Add_to_tree(str(input_tag))
         else:
             QMessageBox.about(self, "Sucess", "Enter a valid Tag")
 
@@ -81,13 +94,39 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
         group = self.lineEdit_GroupName.text()
         rate = self.lineEdit_UpdateRate.text()
         group = str(group)
-        if not group:
-            QMessageBox.about(self, "Error", "Enter the Group name!!")
+        if not group or not Tarray :
+            QMessageBox.about(self, "Error", "Check the Group name / Tags !!")
         else:
-             if not rate:
-                QMessageBox.about(self, "Error", " Update rate is 5 seconds!!")
-                rate = "5"
-             self.create_group(group, rate)
+            if group not in group_list:
+                if not rate:
+                    QMessageBox.about(self, "Error", " Update rate is 5 seconds!!")
+                    rate = "5"
+                else:
+                    try:
+                        val = int(rate)
+                        if type(val) == int:
+                            self.create_group(group, rate)
+                    except ValueError:
+                        QMessageBox.about(self, "Error", "Enter the a Integer for Update Rate!!")
+
+            else:
+                result = QMessageBox.question(self, 'Message', "The group Name Exist!! \n Do you want to over write it ?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+                if result == QMessageBox.Yes:
+                    if not rate:
+                        QMessageBox.about(self, "Error", " Update rate is 5 seconds!!")
+                        rate = "5"
+                    else:
+                        try:
+                            val = int(rate)
+                            if type(val) == int:
+                                connected_server = connections.server()
+                                group = str(group)
+                                connections.edit_group(connected_server, Tarray, group, rate)
+                                del Tarray[:]
+                                self.parent.refresh();
+                                self.close()
+                        except ValueError:
+                            QMessageBox.about(self, "Error", "Enter the a Integer for Update Rate!!")
         return 0
 
     def create_group(self, group, rate):
@@ -121,7 +160,7 @@ class Create_Group1(QtGui.QMainWindow, Create_Group_UI.Ui_MainWindow):
         self.treeWidget.addTopLevelItem(item)
 
     def Add_to_tree(self, tag):
-        list_item = self.listWidgetName.findItems(tag, QtCore.Qt.MatchExactly)
+        list_item = self.listWidget.findItems(tag, QtCore.Qt.MatchExactly)
         if len(list_item) >= 1:
             QMessageBox.about(self, "Error", "Tag Already exist!!")
         else:

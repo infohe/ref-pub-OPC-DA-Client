@@ -29,11 +29,20 @@ def delete_G(servern, group):
     group = str(group)
     conn.execute("DELETE FROM table1 where server = ? AND groupn = ?;", (serv , group))
     conn.commit()
+
 def read_from_db(serv):
     serv = str(serv)
     c.execute("SELECT groupn, tags, update1 FROM table1 where server = ?", (serv,))
     data = c.fetchall()
     return data
+
+def edit_group(current_server, new_tags, group_name, upda):
+    group_name = str(group_name)
+    new_tags=str(new_tags)
+    current_server= str(current_server)
+    upda = int(upda)
+    c.execute("UPDATE table1 SET tags = ?, update1 = ? WHERE groupn = ? AND server = ?", [new_tags, upda, group_name, current_server,])
+    conn.commit()
 
 def delete_tag(current_server,new_tags,group_name):
     group_name = str(group_name)
