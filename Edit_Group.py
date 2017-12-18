@@ -105,7 +105,9 @@ class Edit_Group1(QtGui.QMainWindow, edit_create_groupUI.Ui_MainWindow):
         self.listWidget.clear()
 
     def load_data(self, text):
-        if text != "Select a Group":
+        if text == "--- Select a Group ---":
+            self.refresh_screen()
+        else:
             self.listWidget.clear()
             del Tarray[:]
             indx = group_list.index(text)
