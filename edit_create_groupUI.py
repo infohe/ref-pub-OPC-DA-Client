@@ -224,7 +224,7 @@ class Ui_MainWindow(object):
         self.label_5.setText(_translate("MainWindow", "Tags in the group", None))
         self.button_deleteTag.setText(_translate("MainWindow", "Delete Tag", None))
         self.button_cancel.setText(_translate("MainWindow", "Cancel", None))
-        self.button_createGroup.setText(_translate("MainWindow", "Add / Edit Group", None))
+        self.button_createGroup.setText(_translate("MainWindow", "Save Group", None))
 
 
 if __name__ == "__main__":
