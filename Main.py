@@ -9,8 +9,8 @@ from PyQt4.QtCore import pyqtSlot
 import os
 import connections
 import Main_UI
-from Create_Group import Create_Group1
 import sqlite3
+from Edit_Group import Edit_Group1
 import re
 import time
 opc = OpenOPC.client()
@@ -47,7 +47,6 @@ class About_window(QtGui.QDialog):
         self.line_link.move(255, 385)
         self.line_link.setOpenExternalLinks(True)
         self.line_link.show()
-
 
 class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
     def __init__(self):
@@ -91,11 +90,20 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         self.button_deletegroup.clicked.connect(self.delete_group)
         self.button_dissconnect.clicked.connect(self.disconnect)
         self.button_deleteTag.clicked.connect(self.delete_tag)
+        self.button_editgroup.clicked.connect(self.edit_group)
         self.actionAbout_2.triggered.connect(self.about)
         self.actionExit_2.triggered.connect(self.exit)
 
+    def edit_group(self):
+        server = connections.server()
+        if not server:
+            QMessageBox.information(None, 'Error', ' Connect to Server First.', QMessageBox.Ok, QMessageBox.Ok)
+        else:
+            self._new_window1 = Edit_Group1(self)                                     # Calling the other module (Edit Group)
+            self._new_window1.show()
+
     def throws(self):
-        QMessageBox.about(self, "Error", "No OPC Server Found In this system !! Closing")
+        QMessageBox.information(None, 'Error', ' No OPC Server Found In this system !! Closing.', QMessageBox.Ok, QMessageBox.Ok)
         time.sleep(10)
         self.close()
 
@@ -130,7 +138,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         clicked = self.treeWidget.currentItem()
         column = self.treeWidget.currentColumn()
         if clicked == None:
-            QMessageBox.about(self, "Error", "Select a Group !!")
+            QMessageBox.information(None, 'Error', ' Select a Group !!', QMessageBox.Ok, QMessageBox.Ok)
         else:
             item = clicked.text(column)
             if item in group:
@@ -153,6 +161,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                     for x in data:
                         group.append(x[0])
                     self.server_groups.setText(str(len(group)))                      #update group number
+
                     QMessageBox.question(self, 'Message', "Deleting the Tag from Table?")
                     for x in tags[indx]:
                         if x in TableTags:                                           #delete tag from table when group is deleted
@@ -162,20 +171,21 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                     del tags[indx]                                                  #delete the tags of the group from array
 
                 else:
-                    QMessageBox.about(self, "Error", "Select a Group !!")
+                    QMessageBox.information(None, 'Error', ' Select a Group !!', QMessageBox.Ok, QMessageBox.Ok)
             else:
-                    QMessageBox.about(self, "Error", "Select a Group !!")
+                    QMessageBox.information(None, 'Error', ' Select a Group !!', QMessageBox.Ok, QMessageBox.Ok)
 
     def delete_tag(self):
         selected_row = self.tableWidget.currentRow()
         if selected_row >= 0:
             temp = connections.group()                              #index of the group which tag is
-            cell = self.tableWidget.item(selected_row,0).text()     #tag name from table
+            cell = self.tableWidget.item(selected_row, 0).text()     #tag name from table
             indx = tags[temp].index(cell)                           #index of tag in group[num]
             current_server = connections.server()
             group_name = group[temp]
             new_tags = tags[temp]
-            QMessageBox.about(self, "Remove", "Remove the tag ?")
+            QMessageBox.question(None, 'Message', ' Remove the tag? !!', QMessageBox.Ok, QMessageBox.Ok)
+            self.tableWidget.removeRow(selected_row)
             del new_tags[indx]
             connections.delete_tag(current_server,new_tags,group_name)
             del TableTags[selected_row]
@@ -183,18 +193,15 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
             tags_ = tags[temp]
             g_name = group_name
             u_rate = update_rate[temp]
-            opc.read(tags_, group = g_name, update= u_rate)
+            opc.read(tags_, group=g_name, update=u_rate)
             self.refresh()
-            self.tableWidget.removeRow(selected_row)
+
         else:
-            QMessageBox.about(self, "Error", "Select a Tag in table !!")
+            QMessageBox.about(None, 'Error', ' Select a Tag in table !! !!', QMessageBox.Ok, QMessageBox.Ok)
 
     def condition_tag(self, clicked, column):
         selected_text = clicked.text(column)
         index = self.treeWidget.currentIndex()
-        row = index.row()
-        indexes = self.treeWidget.selectedIndexes()
-        server = opc.servers()
         if selected_text in group:
             del TableTags[:]
             group_index = group.index(selected_text)
@@ -206,23 +213,19 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
             QtCore.QTimer.singleShot(2000, lambda: self.insert_into_table())
         return 0
 
-
     def check_condition(self, clicked, column):
         selected_text = clicked.text(column)
         index = self.treeWidget.currentIndex()
         row = index.row()
-        indexes = self.treeWidget.selectedIndexes()
         server = opc.servers()
         if selected_text in server:
-            connected_server = selected_text
             self.insert_into_tree(selected_text, row)
         if selected_text == "Add New Group":
-            self._new_window = Create_Group1(self)                                     # Calling the other module (Create Group)
+            self._new_window = Edit_Group1(self)                                     # Calling the other module (Create Group)
             self._new_window.show()
         return 0
         if any(selected_text in sublist for sublist in tags):
             print "tag"
-
 
     def insert_into_tree(self, selected_text, row):
         del group[:]
@@ -248,7 +251,6 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                 connections.connect()
                 connected_server = connections.server()
                 data = connections.read_from_db(connected_server)                   #Passing server name to conn DB
-                y = 0
                 for con1 in data:
                     update_rate.append(con1[2])
                     group.append(con1[0])
@@ -268,7 +270,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
                     tags_ = tags[i]
                     g_name = group[i]
                     u_rate = update_rate[i]
-                    opc.read(tags_, group = g_name, update= u_rate)
+                    opc.read(tags_, group=g_name, update=u_rate)
                     for con3 in tags_list:
                         item3 = QtGui.QTreeWidgetItem(item2, [con3])
                     i += 1

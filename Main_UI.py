@@ -30,7 +30,9 @@ class Ui_MainWindow(object):
         font.setFamily(_fromUtf8("Times New Roman"))
         font.setPointSize(10)
         MainWindow.setFont(font)
-        MainWindow.setStyleSheet(_fromUtf8("\n"
+        MainWindow.setStyleSheet(_fromUtf8("QMenuBar {\n"
+"background-color: #eff1f4;\n"
+"}\n"
 "QTreeWidget{\n"
 "padding: 1px;\n"
 "border-style: solid;\n"
@@ -168,7 +170,7 @@ class Ui_MainWindow(object):
         self.server_status.setFont(font)
         self.server_status.setObjectName(_fromUtf8("server_status"))
         self.button_deletegroup = QtGui.QPushButton(self.centralwidget)
-        self.button_deletegroup.setGeometry(QtCore.QRect(120, 380, 87, 26))
+        self.button_deletegroup.setGeometry(QtCore.QRect(100, 380, 87, 26))
         font = QtGui.QFont()
         font.setPointSize(-1)
         self.button_deletegroup.setFont(font)
@@ -235,6 +237,27 @@ class Ui_MainWindow(object):
 "max-height: 18px;\n"
 ""))
         self.button_deleteTag.setObjectName(_fromUtf8("button_deleteTag"))
+        self.button_editgroup = QtGui.QPushButton(self.centralwidget)
+        self.button_editgroup.setGeometry(QtCore.QRect(190, 380, 87, 26))
+        font = QtGui.QFont()
+        font.setPointSize(-1)
+        self.button_editgroup.setFont(font)
+        self.button_editgroup.setStyleSheet(_fromUtf8("border: 2px solid gray;\n"
+"color: white;\n"
+"background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #88d, stop: 0.1 #99e, stop: 0.49 #77c, stop: 0.5 #66b, stop: 1 #77c);\n"
+"border-width: 1px;\n"
+"border-color: #339;\n"
+"border-style: solid;\n"
+"border-radius: 8px;\n"
+"padding: 3px;\n"
+"font-size: 10px;\n"
+"padding-left: 5px;\n"
+"padding-right: 5px;\n"
+"min-width: 75px;\n"
+"max-width: 75px;\n"
+"min-height: 18px;\n"
+"max-height: 18px;"))
+        self.button_editgroup.setObjectName(_fromUtf8("button_editgroup"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 847, 21))
@@ -287,6 +310,7 @@ class Ui_MainWindow(object):
         item = self.tableWidget.horizontalHeaderItem(4)
         item.setText(_translate("MainWindow", "TimeStamp", None))
         self.button_deleteTag.setText(_translate("MainWindow", "Delete Tag", None))
+        self.button_editgroup.setText(_translate("MainWindow", "Add /Edit Group", None))
         self.menuFIle.setTitle(_translate("MainWindow", "File", None))
         self.actionSave.setText(_translate("MainWindow", "Save", None))
         self.actionOpen.setText(_translate("MainWindow", "Open", None))
