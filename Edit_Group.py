@@ -13,16 +13,19 @@ import connections
 import sqlite3
 opc = OpenOPC.client()
 
+
 class Edit_Group1(QtGui.QMainWindow, edit_create_groupUI.Ui_MainWindow):
-    global Tarray, Main_Tags, Sub_Tags, Tag_list, group_list, update_rate, Tags_db
+    global Tarray, Main_Tags, Sub_Tags, tag_list, group_list, update_rate, Tags_db
     Main_Tags = []
     Sub_Tags = []
     Tarray = []
     group_list = []
-    Tag_list = []
+    tag_list = []
     update_rate = []
     Tags_db = []
     global connected_server
+    connected_server = ''
+
     def __init__(self, parent=None):
         super(self.__class__, self).__init__()
         self.parent = parent;
@@ -33,18 +36,16 @@ class Edit_Group1(QtGui.QMainWindow, edit_create_groupUI.Ui_MainWindow):
         self.comboData = ['None']
         self.comboBox.addItem(" Select")
         self.treeWidget.setHeaderHidden(True)
-        connected_server = connections.server()
-        data = connections.read_from_db(connected_server)
         self.comboBox_2.comboData = ("--- Select a Group ---")
         self.comboBox_2.addItem("--- Select a Group ---")
         s_ind = 0
-        Tag_list = opc.list('*',recursive=True)
-        for x in Tag_list:
+        tag_list = opc.list('*', recursive=True)
+        for x in tag_list:
             str_list = x.split('.')
             tag = str_list[0]
             if tag not in Main_Tags:
-                ind = Tag_list. index(x)
-                array = Tag_list[s_ind:ind]
+                ind = tag_list. index(x)
+                array = tag_list[s_ind:ind]
                 if not array:
                     print "do nothing"
                 else:
@@ -56,12 +57,10 @@ class Edit_Group1(QtGui.QMainWindow, edit_create_groupUI.Ui_MainWindow):
 
         connected_server = connections.server()
         data = connections.read_from_db(connected_server)                   #Passing server name to conn DB
-        y = 0
         for con1 in data:
             update_rate.append(con1[2])
             self.comboBox_2.addItem(con1[0])
             group_list.append(con1[0])
-            temp1 = str(con1[1])
             temp2 = con1[1]
             temp2 = str(temp2)
             temp2 = temp2.replace("'", "")
@@ -76,7 +75,7 @@ class Edit_Group1(QtGui.QMainWindow, edit_create_groupUI.Ui_MainWindow):
         edit.setCompleter(completer)
         model = QStringListModel()
         completer.setModel(model)
-        self.get_data(model,Tag_list)
+        self.get_data(model, tag_list)
 
         line_g = self.lineEdit_GroupName
         regex = QtCore.QRegExp("[a-z-A-Z-0-9-@-#-$_]+")
@@ -118,44 +117,51 @@ class Edit_Group1(QtGui.QMainWindow, edit_create_groupUI.Ui_MainWindow):
                 self.listWidget.addItem(item)
                 Tarray.append(item)
 
-    def get_data(self,model,Tag_list):
-        model.setStringList(Tag_list)
+    def get_data(self, model, tag_list):
+        model.setStringList(tag_list)
 
-    def search(self,Tag_list):
+    def search(self, tag_list):
         input_tag = self.lineEdit_searchTag.text()
-        check_list = opc.list('*',recursive=True)
+        check_list = opc.list('*', recursive=True)
         if input_tag in check_list:
-            result = QMessageBox.question(self, 'Message', "The tag has been Found !! \n Do you want to insert it ?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            result = QMessageBox.question(None, 'Message', "The tag has been Found !! \n Do you want to insert it ?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if result == QMessageBox.Yes:
                 self.Add_to_tree(str(input_tag))
         else:
-            QMessageBox.Warning(None, 'Error', ' Enter a valid Tag!!',QMessageBox.Ok,QMessageBox.Ok)
+            QMessageBox.Warning(None, 'Error', ' Enter a valid Tag!!', QMessageBox.Ok, QMessageBox.Ok)
 
     def load_tree(self):
         group = self.lineEdit_GroupName.text()
         rate = self.lineEdit_UpdateRate.text()
         group = str(group)
-        if not group or not Tarray :
-            QMessageBox.Warning(None, 'Error', ' Check the Group name / Tags !!',QMessageBox.Ok,QMessageBox.Ok)
+        if not group or not Tarray:
+            QMessageBox.Warning(None, 'Error', ' Check the Group name / Tags !!', QMessageBox.Ok, QMessageBox.Ok)
         else:
             if group not in group_list:
                 if not rate:
-                    QMessageBox.information(None, 'Message', ' Update rate is seconds !!',QMessageBox.Ok,QMessageBox.Ok)
+                    QMessageBox.information(None, 'Message', ' Update rate is seconds !!', QMessageBox.Ok, QMessageBox.Ok)
                     rate = "5"
+                    self.create_group(group, rate)
                 else:
                     try:
                         val = int(rate)
                         if type(val) == int:
                             self.create_group(group, rate)
                     except ValueError:
-                        QMessageBox.Warning(None, 'Error', ' Enter the a Integer for Update Rate!!',QMessageBox.Ok,QMessageBox.Ok)
+                        QMessageBox.Warning(None, 'Error', ' Enter the a Integer for Update Rate!!', QMessageBox.Ok, QMessageBox.Ok)
 
             else:
-                result = QMessageBox.question(self, 'Message', "The group Name Exist!! \n Do you want to change it ?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+                result = QMessageBox.question(None, 'Message', "The group Name Exist!! \n Do you want to change it ?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
                 if result == QMessageBox.Yes:
                     if not rate:
-                        QMessageBox.information(None, 'Message', ' Update rate is seconds !!',QMessageBox.Ok,QMessageBox.Ok)
+                        QMessageBox.information(None, 'Message', ' Update rate is seconds !!', QMessageBox.Ok, QMessageBox.Ok)
                         rate = "5"
+                        connected_server = connections.server()
+                        group = str(group)
+                        connections.edit_group(connected_server, Tarray, group, rate)
+                        del Tarray[:]
+                        self.parent.refresh();
+                        self.close()
                     else:
                         try:
                             val = int(rate)
@@ -167,21 +173,20 @@ class Edit_Group1(QtGui.QMainWindow, edit_create_groupUI.Ui_MainWindow):
                                 self.parent.refresh();
                                 self.close()
                         except ValueError:
-                            QMessageBox.Warning(None, 'Error', ' Enter the a Integer for Update Rate !!',QMessageBox.Ok,QMessageBox.Ok)
+                            QMessageBox.Warning(None, 'Error', ' Enter the a Integer for Update Rate !!', QMessageBox.Ok, QMessageBox.Ok)
         return 0
 
     def create_group(self, group, rate):
             tags = str(Tarray)
             connected_server = connections.server()
             connected_server = str(connected_server)
-            QMessageBox.about(self, "Sucess", "Group has been created ")
+            QMessageBox.about(None, "Success", "Group has been created ")
             connections.create_new(connected_server, group, tags, rate)
             del Tarray[:]
             self.parent.refresh();
             self.close()
 
     def onActivate(self, text):
-        connected_server = connections.server()
         self.comboBox.clear()                                 # delete all items from comboBox
         self.comboData = [text]
         self.comboBox.addItems(self.comboData)
@@ -203,7 +208,7 @@ class Edit_Group1(QtGui.QMainWindow, edit_create_groupUI.Ui_MainWindow):
     def Add_to_tree(self, tag):
         list_item = self.listWidget.findItems(tag, QtCore.Qt.MatchExactly)
         if len(list_item) >= 1:
-            QMessageBox.about(self, "Error", "Tag Already exist!!")
+            QMessageBox.about(None, "Error", "Tag Already exist!!")
         else:
             self.listWidget.addItem(tag)
             Tarray.append(tag)
@@ -212,11 +217,11 @@ class Edit_Group1(QtGui.QMainWindow, edit_create_groupUI.Ui_MainWindow):
         add = clicked.text(column)
         add = str(add)
         if add == "Tags":
-            QMessageBox.about(self, "Error", "Select Tag !")
+            QMessageBox.about(None, "Error", "Select Tag !")
         else:
             list_item = self.listWidget.findItems(add, QtCore.Qt.MatchExactly)    # Check if any tag with same name exist
             if len(list_item) >= 1:
-                QMessageBox.about(self, "Error", "Tag Already exist!!")
+                QMessageBox.about(None, "Error", "Tag Already exist!!")
             else:
                 self.listWidget.addItem(add)
                 Tarray.append(add)
