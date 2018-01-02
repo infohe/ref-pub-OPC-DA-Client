@@ -20,7 +20,9 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">
+   <string notr="true">QMenuBar {
+background-color: #eff1f4;
+}
 QTreeWidget{
 padding: 1px;
 border-style: solid;
@@ -259,7 +261,7 @@ QTreeView::branch:open:has-children:has-siblings  {
    <widget class="QPushButton" name="button_deletegroup">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>100</x>
       <y>380</y>
       <width>87</width>
       <height>26</height>
@@ -384,6 +386,41 @@ max-height: 18px;
     </property>
     <property name="text">
      <string>Delete Tag</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="button_editgroup">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>380</y>
+      <width>87</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>-1</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: 2px solid gray;
+color: white;
+background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #88d, stop: 0.1 #99e, stop: 0.49 #77c, stop: 0.5 #66b, stop: 1 #77c);
+border-width: 1px;
+border-color: #339;
+border-style: solid;
+border-radius: 8px;
+padding: 3px;
+font-size: 10px;
+padding-left: 5px;
+padding-right: 5px;
+min-width: 75px;
+max-width: 75px;
+min-height: 18px;
+max-height: 18px;</string>
+    </property>
+    <property name="text">
+     <string>Edit Group</string>
     </property>
    </widget>
   </widget>
