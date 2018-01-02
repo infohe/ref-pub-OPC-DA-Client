@@ -14,6 +14,8 @@ from Edit_Group import Edit_Group1
 import re
 import time
 opc = OpenOPC.client()
+
+
 class About_window(QtGui.QDialog):
     def __init__(self, parent=None):
         super(About_window, self).__init__(parent)
@@ -47,6 +49,7 @@ class About_window(QtGui.QDialog):
         self.line_link.move(255, 385)
         self.line_link.setOpenExternalLinks(True)
         self.line_link.show()
+
 
 class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
     def __init__(self):
@@ -282,7 +285,7 @@ class MainWindow(QtGui.QMainWindow, Main_UI.Ui_MainWindow):
         self.tableWidget.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         group_ind = connections.group()
         group_name = group[group_ind]
-        data = opc.read(group = group_name)
+        data = opc.read(group=group_name)
         for value in data:
             print value
             index_table = TableTags.index(value[0])
