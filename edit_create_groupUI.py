@@ -16,13 +16,11 @@ except AttributeError:
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
-
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -38,19 +36,6 @@ class Ui_MainWindow(object):
 "    border: 1px solid darkgray;\n"
 "    border-radius: 3px;\n"
 "}\n"
-"QListWidget {\n"
-"padding: 5px;\n"
-"border-style: solid;\n"
-"border: 3px solid gray;\n"
-"border-radius: 10px;\n"
-"}\n"
-"QTreeWidget {\n"
-"padding: 3px;\n"
-"border-style: solid;\n"
-"border: 2px solid gray;\n"
-"border-radius: 12px;\n"
-"}\n"
-"\n"
 "QPushButton {\n"
 "color: white;\n"
 "background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #88d, stop: 0.1 #99e, stop: 0.49 #77c, stop: 0.5 #66b, stop: 1 #77c);\n"
@@ -173,8 +158,8 @@ class Ui_MainWindow(object):
         self.pushButton.setGeometry(QtCore.QRect(330, 30, 32, 33))
         self.pushButton.setStyleSheet(_fromUtf8("QPushButton {\n"
 "color: white;\n"
-"background-color: #c6d8f4;\n"
-"border-image: url(images/refresh.png) 3 10 3 10;\n"
+"background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #88d, stop: 0.1 #99e, stop: 0.49 #77c, stop: 0.5 #66b, stop: 1 #77c);\n"
+"border-image: url(refresh.png) 3 10 3 10;\n"
 "border-width: 1px;\n"
 "border-color: #339;\n"
 "border-style: solid;\n"
@@ -226,7 +211,7 @@ class Ui_MainWindow(object):
         self.label_5.setText(_translate("MainWindow", "Tags in the group", None))
         self.button_deleteTag.setText(_translate("MainWindow", "Delete Tag", None))
         self.button_cancel.setText(_translate("MainWindow", "Cancel", None))
-        self.button_createGroup.setText(_translate("MainWindow", "Save Group", None))
+        self.button_createGroup.setText(_translate("MainWindow", "Add / Edit Group", None))
 
 
 if __name__ == "__main__":
